@@ -231,6 +231,28 @@ quality-picker label input {
     user-select: none;
 }
 
+#resetAllButton {
+    padding: 10px 15px 10px 15px;
+    background-color: #900;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    outline: 1px dotted red;
+    outline-offset: -7px;
+}
+
+#resetAllButton:hover {
+    background-color: #700;
+}
+
+#resetAllButton:active {
+    background-color: #500;
+}
+
+.resetAllDiv {
+    text-align: right;
+}
+
 @media (min-width: 768px) {
     main {
         display: grid;
