@@ -1,12 +1,13 @@
 // Global references that will be accessed frequently.
-const partyNumberInput = document.getElementById('partyNumber');
-const lootTable = document.getElementById('lootTable');
-const lootForm = document.querySelector('#lootForm');
+const PARTY_NUMBER_INPUT = document.getElementById('partyNumber');
+const LOOT_TABLE = document.getElementById('lootTable');
+const LOOT_FORM = document.querySelector('#lootForm');
+const STORAGE_KEY = "lootSplitterState";
 
 // Global variables.
 let lootList = []; // Set up the loot list array.
 let partySize = 1; // Global variable for the party size.
-let totalLootPartyValue = 0.0; // For use when splitting value in the party.
+let totalLootPartyValue = 0.0; // For use when splitting loot value among the party.
 let totalLootQuantity = 0;
 
 
@@ -49,23 +50,6 @@ class LootItem {
 }
 
 
-// A simple class for storing the loot given to player-characters.7
-class PlayerCharacter {
-    constructor(playerNumber, loot = []) {
-        this.playerNumber = playerNumber;
-        this.loot = loot;
-    }
-
-    // The loot parameter MUST be of type LootItem!
-    giveLoot(loot) {
-        // Only if the object is LootItem type will it be added.
-        if (loot instanceof LootItem) {
-            this.loot.push(loot);
-        }
-    }
-}
-
-
 // This function looks at how many pieces of loot are available, looks at how many players have been defined,
 // then does a simple division for loot distribution. Of course, if there are more players than loot then
 // some players may not get any (will be a float less than 1.0).
@@ -95,14 +79,14 @@ function splitLoot() {
 // see if I could apply the assignment concepts to my existing table structure. I may refactor
 // this in the next assignment.
 function renderLoot() {
-    lootTable.innerHTML = "";
+    LOOT_TABLE.innerHTML = "";
     totalLootPartyValue = 0.0;
     totalLootQuantity = 0;
 
     // When updating the loot table, if the length is zero we just blank it out, hide it, and bail.
     if (lootList.length === 0) {
-        lootTable.style.display = "none";
-        lootTable.innerHTML = "";
+        LOOT_TABLE.style.display = "none";
+        LOOT_TABLE.innerHTML = "";
         document.getElementById('no-loot-message').style.display = "block";
         return;
     }
@@ -139,7 +123,7 @@ function renderLoot() {
         </tr>
         `;
 
-    lootTable.insertAdjacentHTML("afterbegin", lootTableHeader);
+    LOOT_TABLE.insertAdjacentHTML("afterbegin", lootTableHeader);
 
     // For adding up the totals in the loop below.
     let totalLootBaseValue = 0.0;
@@ -171,13 +155,13 @@ function renderLoot() {
         
         removeCell.appendChild(removeButton);
         lootTableRow.appendChild(removeCell);
-        lootTable.appendChild(lootTableRow);
+        LOOT_TABLE.appendChild(lootTableRow);
         
         removeButton.addEventListener("click", function() { removeLoot(index) });
     }
 
     // The spacer line between the last item and the totals line.
-    lootTable.insertAdjacentHTML("beforeend", `<tr><td colspan="9">&nbsp;</td></tr>`);
+    LOOT_TABLE.insertAdjacentHTML("beforeend", `<tr><td colspan="9">&nbsp;</td></tr>`);
 
     // Create the new row that will be the totals line and load it up with data.
     let lootTotalRow = document.createElement("tr");
@@ -191,43 +175,44 @@ function renderLoot() {
         <td></td>
         `;
 
-    lootTable.appendChild(lootTotalRow);
+    LOOT_TABLE.appendChild(lootTotalRow);
     
     document.getElementById('no-loot-message').style.display = "none"; // Hide the "no loot to display" message.
 
-    lootTable.style.display = "table";
+    LOOT_TABLE.style.display = "table";
 }
 
 
 // This adds loot to the lootList global array, using the name, quantity, value, and quality/rarity selector.
 // This makes use of a custom class to construct the loot object.
 function addLoot() {
-    let itemName = lootForm.elements['lootname'].value.trim(); // Make sure we trim whitespace from the name.
+    let itemName = LOOT_FORM.elements['lootname'].value.trim(); // Make sure we trim whitespace from the name.
     
     // No adding loot with a blank name or just numbers.
     if (itemName === "") return;
     if (!isNaN(Number(itemName))) return;
     
     // Quantities less than 1 will default to at least 1.
-    let [itemQuantity, wasInputValid] = forcePositiveNonZeroInteger(lootForm.elements['lootquantity'].value);
-    if (!wasInputValid) lootForm.elements['lootquantity'].value = itemQuantity;
+    let [itemQuantity, wasInputValid] = forcePositiveNonZeroInteger(LOOT_FORM.elements['lootquantity'].value);
+    if (!wasInputValid) LOOT_FORM.elements['lootquantity'].value = itemQuantity;
 
     // These variables declared later as there's no sense in doing so early if the above checks return.
-    let itemValue = lootForm.elements['lootvalue'].value;
-    let itemRarity = lootForm.elements['lootquality'].value;
+    let itemValue = LOOT_FORM.elements['lootvalue'].value;
+    let itemRarity = LOOT_FORM.elements['lootquality'].value;
 
     // Do a bit of sanity check. In the event the loot value isn't a number, default to zero.
     // If it's a negative number, will do the absolute value instead. No negative value allowed!
     itemValue = Number(Math.abs(itemValue))
     if (isNaN(itemValue)) {
         itemValue = 0.0;
-        lootForm.elements['lootvalue'].value = itemValue;
+        LOOT_FORM.elements['lootvalue'].value = itemValue;
     }
     
     // Construct the new loot item using our custom class using the name, value, and rarity, and push it onto the array.
     let newLoot = new LootItem(itemName, itemValue, itemQuantity, itemRarity);
     lootList.push(newLoot);
 
+    saveState();
     updateUI();
 }
 
@@ -235,12 +220,6 @@ function addLoot() {
 function removeLoot(index) {
     if (isNaN(Number(index)) || index === null) return; // Bail out in the event of a bad index value. This shouldn't happen but with JavaScript you never know.
     lootList.splice(index, 1); // Splices out the index of the loot passed into it, therefore removing it from the array.
-    updateUI();
-}
-
-
-function removeAllLoot() {
-    lootList = [];
     updateUI();
 }
 
@@ -267,7 +246,7 @@ function forcePositiveNonZeroInteger(numberToMakeValid) {
 // Handles the user entering non-numbers, negative numbers, or floats into the input.
 function validatePartySize() {
     let wasInputValid = true;
-    [partySize, wasInputValid] = forcePositiveNonZeroInteger(partyNumberInput.value);
+    [partySize, wasInputValid] = forcePositiveNonZeroInteger(PARTY_NUMBER_INPUT.value);
 
     if (!wasInputValid) {
         document.getElementById('partyNumber').value = partySize;
@@ -275,6 +254,70 @@ function validatePartySize() {
     } else {
         document.getElementById('invalid-party-size-message').style.display = "none";
     }
+}
+
+
+function updatePartySize() {
+    validatePartySize();
+    saveState();
+    updateUI();
+}
+
+
+function updateUI() {
+    console.log("Calling updateUI()");
+    renderLoot();
+    splitLoot();
+
+    if (lootList.length === 0) {
+        document.getElementById('splitLootButton').setAttribute("disabled", "true");
+    } else {
+        document.getElementById('splitLootButton').removeAttribute("disabled");
+    }
+}
+
+
+function saveState() {
+    let saveStateObject = [
+        partySize,
+        JSON.stringify(lootList)
+    ]
+    
+    console.log(saveStateObject);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saveStateObject));
+
+}
+
+
+function loadState() {
+    let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saveStateObject === null) return; // Bail out if the key doesn't exist to avoid errors.
+    let loadLootList = JSON.parse(saveStateObject[1])
+    
+    for (loot of loadLootList) {
+        console.log(loot);
+        let newLoot = new LootItem (loot["name"], loot["value"], loot["quantity"], loot["rarity"]);
+        lootList.push(newLoot);
+    }
+
+    PARTY_NUMBER_INPUT.value = saveStateObject[0];
+    updateUI();
+}
+
+
+function resetAll() {
+    PARTY_NUMBER_INPUT.value = 1;
+    LOOT_FORM.reset();
+    lootList = [];
+    localStorage.clear();
+    updateUI();    
+}
+
+
+// For some added fun.
+function closePartySetup() {
+    document.getElementById('partySetupPanel').style.display = "none";
+    document.getElementById('party-setup-close').style.display = "block";
 }
 
 
@@ -296,43 +339,17 @@ function debugRandomLoot() {
         lootList.push(newLoot);
     }
 
+    saveState();
     updateUI();
-}
-
-
-function updateUI() {
-    validatePartySize();
-    splitLoot();
-    renderLoot();
-
-    if (lootList.length === 0) {
-        document.getElementById('splitLootButton').setAttribute("disabled", "true");
-    } else {
-        document.getElementById('splitLootButton').removeAttribute("disabled");
-    }
-
-}
-
-
-function resetAll() {
-    partyNumberInput.value = 1;
-    lootForm.reset();
-    lootList = [];
-    updateUI();    
-}
-
-
-// For some added fun.
-function closePartySetup() {
-    document.getElementById('partySetupPanel').style.display = "none";
-    document.getElementById('party-setup-close').style.display = "block";
 }
 
 
 // Set up the event listeners for the existing buttons on the page.
 document.getElementById('addLootButton').addEventListener('click', addLoot);
 document.getElementById('splitLootButton').addEventListener('click', updateUI);
-document.getElementById('partyNumber').addEventListener('change', updateUI);
+document.getElementById('partyNumber').addEventListener('change', updatePartySize);
 document.getElementById('debugRandomLoot').addEventListener('click', debugRandomLoot);
 document.getElementById('party-setup-close-button').addEventListener('click', closePartySetup);
 document.getElementById('resetAllButton').addEventListener('click', resetAll);
+
+loadState();
