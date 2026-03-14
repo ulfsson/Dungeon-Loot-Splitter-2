@@ -1,6 +1,7 @@
 // Global references that will be accessed frequently.
 const partyNumberInput = document.getElementById('partyNumber');
 const lootTable = document.getElementById('lootTable');
+const lootForm = document.querySelector('#lootForm');
 
 // Global variables.
 let lootList = []; // Set up the loot list array.
@@ -103,7 +104,6 @@ function renderLoot() {
         lootTable.style.display = "none";
         lootTable.innerHTML = "";
         document.getElementById('no-loot-message').style.display = "block";
-        updateUI();
         return;
     }
 
@@ -196,15 +196,12 @@ function renderLoot() {
     document.getElementById('no-loot-message').style.display = "none"; // Hide the "no loot to display" message.
 
     lootTable.style.display = "table";
-
-    updateUI();
 }
 
 
 // This adds loot to the lootList global array, using the name, quantity, value, and quality/rarity selector.
 // This makes use of a custom class to construct the loot object.
 function addLoot() {
-    const lootForm = document.querySelector('#lootForm'); // Get a reference to the loot form itself.
     let itemName = lootForm.elements['lootname'].value.trim(); // Make sure we trim whitespace from the name.
     
     // No adding loot with a blank name or just numbers.
@@ -231,20 +228,19 @@ function addLoot() {
     let newLoot = new LootItem(itemName, itemValue, itemQuantity, itemRarity);
     lootList.push(newLoot);
 
-    renderLoot();
+    updateUI();
 }
 
 
 function removeLoot(index) {
     if (isNaN(Number(index)) || index === null) return; // Bail out in the event of a bad index value. This shouldn't happen but with JavaScript you never know.
     lootList.splice(index, 1); // Splices out the index of the loot passed into it, therefore removing it from the array.
-    renderLoot();
+    updateUI();
 }
 
 
 function removeAllLoot() {
     lootList = [];
-    renderLoot();
     updateUI();
 }
 
@@ -300,19 +296,29 @@ function debugRandomLoot() {
         lootList.push(newLoot);
     }
 
-    renderLoot();
+    updateUI();
 }
 
 
 function updateUI() {
     validatePartySize();
     splitLoot();
+    renderLoot();
 
     if (lootList.length === 0) {
         document.getElementById('splitLootButton').setAttribute("disabled", "true");
     } else {
         document.getElementById('splitLootButton').removeAttribute("disabled");
     }
+
+}
+
+
+function resetAll() {
+    partyNumberInput.value = 1;
+    lootForm.reset();
+    lootList = [];
+    updateUI();    
 }
 
 
@@ -328,5 +334,5 @@ document.getElementById('addLootButton').addEventListener('click', addLoot);
 document.getElementById('splitLootButton').addEventListener('click', updateUI);
 document.getElementById('partyNumber').addEventListener('change', updateUI);
 document.getElementById('debugRandomLoot').addEventListener('click', debugRandomLoot);
-document.getElementById('loot-list-close-button').addEventListener("click", removeAllLoot);
 document.getElementById('party-setup-close-button').addEventListener('click', closePartySetup);
+document.getElementById('resetAllButton').addEventListener('click', resetAll);
