@@ -265,7 +265,6 @@ function updatePartySize() {
 
 
 function updateUI() {
-    console.log("Calling updateUI()");
     renderLoot();
     splitLoot();
 
@@ -280,7 +279,7 @@ function updateUI() {
 function saveState() {
     let saveStateObject = [
         partySize,
-        JSON.stringify(lootList)
+        lootList
     ]
     
     console.log(saveStateObject);
@@ -292,10 +291,9 @@ function saveState() {
 function loadState() {
     let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saveStateObject === null) return; // Bail out if the key doesn't exist to avoid errors.
-    let loadLootList = JSON.parse(saveStateObject[1])
+    let loadLootList = saveStateObject[1];
     
     for (loot of loadLootList) {
-        console.log(loot);
         let newLoot = new LootItem (loot["name"], loot["value"], loot["quantity"], loot["rarity"]);
         lootList.push(newLoot);
     }
