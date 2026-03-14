@@ -284,7 +284,6 @@ function saveState() {
     
     console.log(saveStateObject);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saveStateObject));
-
 }
 
 
@@ -308,6 +307,7 @@ function resetAll() {
     LOOT_FORM.reset();
     lootList = [];
     localStorage.clear();
+    showPartySetup();
     updateUI();    
 }
 
@@ -316,6 +316,12 @@ function resetAll() {
 function closePartySetup() {
     document.getElementById('partySetupPanel').style.display = "none";
     document.getElementById('party-setup-close').style.display = "block";
+}
+
+
+function showPartySetup() {
+    document.getElementById('partySetupPanel').style.display = "grid";
+    document.getElementById('party-setup-close').style.display = "none";
 }
 
 
@@ -348,6 +354,7 @@ document.getElementById('splitLootButton').addEventListener('click', updateUI);
 document.getElementById('partyNumber').addEventListener('change', updatePartySize);
 document.getElementById('debugRandomLoot').addEventListener('click', debugRandomLoot);
 document.getElementById('party-setup-close-button').addEventListener('click', closePartySetup);
+document.getElementById('party-setup-show-button').addEventListener('click', showPartySetup);
 document.getElementById('resetAllButton').addEventListener('click', resetAll);
 
 loadState();
