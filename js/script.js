@@ -246,7 +246,7 @@ function saveState() {
 function restoreState() {
     let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
     
-    // A bunch of checks to ensure that the data we're working with is valid.
+    // A bunch of checks to ensure that the data we're restoring is valid.
     // Checks for null, non-object, length, and appropriate types and validity of that specific expected data.
     if (saveStateObject === null || typeof(saveStateObject) !== 'object') return;
     if (saveStateObject.length !== 2) return;

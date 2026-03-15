@@ -58,7 +58,7 @@ main>section>header {
 
 
 /* This is for the fake close button decoration. */
-main>section>header>div {
+main>section>header>div:nth-child(1) {
     width: 13px;
     height: 13px;
     outline: 1px solid black;
@@ -75,6 +75,38 @@ main>section>header>div {
     left: 0;
 }
 
+
+.title-decor-left {
+    margin-left: 20px;
+    flex: 1;
+    width: 100%;
+}
+
+
+.title-decor-right {
+    margin-right: 5px;
+    flex: 1;
+    width: 100%;
+}
+
+
+.title-decor>div {
+    border-top: 1px solid white;
+    box-shadow: 1px 1px 0 #777;
+    margin-bottom: 1px;
+}
+
+
+main>section>header>h2 {
+    color: black;
+    font-weight: bold;
+    font-size: small;
+    font-family: Tahoma, sans-serif;
+    padding: 0 5px;
+    user-select: none;
+}
+
+
 .party-setup {
     text-align: center;
     place-content: center;
@@ -87,16 +119,6 @@ main>section>header>div {
 main>section>header>div:active {
     background-image: linear-gradient(to bottom right, #444, #bbb);
     box-shadow: none;
-}
-
-
-main>section>header>h2 {
-    color: black;
-    font-weight: bold;
-    font-size: small;
-    font-family: Tahoma, sans-serif;
-    padding: 0 5px;
-    user-select: none;
 }
 
 
