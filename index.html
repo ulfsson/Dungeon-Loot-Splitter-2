@@ -39,9 +39,9 @@
         <div id="party-setup-close">
             <figure>
                 <img src="./images/bnuuy.png" alt="A bunny playing Jenga.">
-                <figcaption><span>Oops. Now you've done it.</span></figcaption><br>
-                <button id="party-setup-show-button">Go Back</button>
+                <figcaption><span>Oops. Now you've done it.</span></figcaption>
             </figure>
+            <button id="party-setup-show-button">Go Back</button>
         </div>
 
         <section aria-label="Add Loot panel">
@@ -108,7 +108,7 @@
                     </thead>
                     <tbody id="lootData"></tbody>
                     <tfoot>
-                        <tr><td colspan="9">&nbsp;</td></tr>
+                        <tr><td colspan="7">&nbsp;</td></tr>
                         <tr>
                             <td><b>Totals:</b></td>
                             <td id="totalLootQuantity"></td>
@@ -212,6 +212,25 @@
                     <br>
                     There is a handler for invalid party size entries, but with the way the logic is written that handler should never occur. But with how weird JavaScript can be and people possibly fiddling with developer tools in the browser it's better safe than sorry. 
                 </p>
+                <hr>
+
+                <p>
+                    <b><u>State Save/Restore</u></b><br>
+                    Each time an element changes that alters the party size and the loot table, <code>localStorage</code> is used to write a single key to disk that contains both of those elements contained in an array which is turned into a JSON string prior to writing using <code>JSON.stringify()</code>. When reloading the page, the key is read in again, un-converted using <code>JSON.parse()</code>, then the data is validated before being recreated for the page to display. Should invalid data be encountered, it will either be "corrected" to a valid value if possible or, in the case of the loot table, will simply cause the item to be skipped.
+                </p>
+                <hr>
+                
+                <p>
+                    <b><u>updateUI()</u></b><br>
+                    This must be called after restoration of the data in order to force everything to display in the interface. Not doing this will otherwise just cause the data to sit there in their respective variables.
+                </p>
+                <hr>
+
+                <p>
+                    <b><u>JSON.stringify()/.parse()</u></b><br>
+                    Conceptually, <code>stringify()</code> causes the object passed into it to be converted into a human-readable string that can be saved to disk. This ultimately strips it of any of its prototype information that would allow it to function as an object. JavaScript treats the result as a string. The <code>parse()</code> method convers a string back into an object or an array, provided the string itself is in the correct format.
+                </p>
+
                 <hr>
                 <p>The button below will call a method to instantly load up the loot list table with random pieces of dungeon loot. Name, quantity, value, and rarity are all randomized. Useful for quickly testing certain features that doesn't involve manually entering items.</p>
                 <button id="debugRandomLoot">[Debug] Random Loot</button>

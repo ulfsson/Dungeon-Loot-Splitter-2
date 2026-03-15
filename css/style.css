@@ -232,6 +232,7 @@ quality-picker label input {
     font-size: large;
     font-weight: bold;
     text-align: center;
+    text-wrap: balance;
     place-content: center;
     height: 100%;
 }
@@ -248,20 +249,24 @@ quality-picker label input {
     padding: 5px;
 }
 
+
 #party-setup-close {
     display: none;
     text-align: center;
 }
 
+
 #party-setup-close img {
     border-radius: 10px;
 }
+
 
 #party-setup-close span {
     background-color: gray;
     font-weight: bold;
     padding: 3px;
     user-select: none;
+
 }
 
 #resetAllButton {
@@ -284,6 +289,15 @@ quality-picker label input {
 
 .resetAllDiv {
     text-align: right;
+}
+
+code {
+    background-color: darkgray;
+    color: darkblue;
+    padding: 1px 3px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 @media (min-width: 768px) {

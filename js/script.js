@@ -176,6 +176,7 @@ function addLoot() {
 function removeLoot(index) {
     if (isNaN(Number(index)) || index === null) return; // Bail out in the event of a bad index value. This shouldn't happen but with JavaScript you never know.
     lootList.splice(index, 1); // Splices out the index of the loot passed into it, therefore removing it from the array.
+    saveState();
     updateUI();
 }
 
@@ -243,8 +244,22 @@ function saveState() {
 }
 
 
+function parseJSON(json_string) {
+    let parsed_json = null;
+
+    try {
+        parsed_json = JSON.parse(json_string);
+    } catch (err) { }
+
+    return parsed_json;
+}
+
+
 function restoreState() {
-    let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    // let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    let saveStateObject = parseJSON(localStorage.getItem(STORAGE_KEY));
+
+    if (saveStateObject === null) return; // If the attempt to parse the JSON is null, just don't do anything.
     
     // A bunch of checks to ensure that the data we're restoring is valid.
     // Checks for null, non-object, length, and appropriate types and validity of that specific expected data.
@@ -330,3 +345,4 @@ document.getElementById('party-setup-show-button').addEventListener('click', sho
 document.getElementById('resetAllButton').addEventListener('click', resetAll);
 
 restoreState();
+
