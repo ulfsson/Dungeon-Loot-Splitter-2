@@ -76,54 +76,19 @@ function splitLoot() {
 
 // Creates the table rows for the loot list table and unhides/hides it based on available data.
 // I realize this is a little ugly and could be accomplished with divs, but I largely wanted to
-// see if I could apply the assignment concepts to my existing table structure. I may refactor
-// this in the next assignment.
+// see if I could apply the assignment concepts to my existing table structure. I may refactor this.
 function renderLoot() {
-    LOOT_TABLE.innerHTML = "";
+    const LOOT_DATA = document.getElementById("lootData");
+    LOOT_DATA.innerHTML = "";
     totalLootPartyValue = 0.0;
     totalLootQuantity = 0;
 
     // When updating the loot table, if the length is zero we just blank it out, hide it, and bail.
     if (lootList.length === 0) {
         LOOT_TABLE.style.display = "none";
-        LOOT_TABLE.innerHTML = "";
         document.getElementById('no-loot-message').style.display = "block";
         return;
     }
-
-    let lootTableHeader = `
-        <tr>
-            <th>
-                Item Name
-            </th>
-
-            <th>
-                Quantity
-            </th>
-
-            <th>
-                Quality
-            </th>
-            
-            <th>
-                Base Value
-            </th>
-            
-            <th>
-                Quality Value
-            </th>
-
-            <th>
-                Total Value
-            </th>
-
-            <th>
-                Remove
-            </th>
-        </tr>
-        `;
-
-    LOOT_TABLE.insertAdjacentHTML("afterbegin", lootTableHeader);
 
     // For adding up the totals in the loop below.
     let totalLootBaseValue = 0.0;
@@ -135,6 +100,7 @@ function renderLoot() {
         totalLootBaseValue += item.value;
         totalLootRarityValue += item.rarityValue;
         totalLootPartyValue += (item.rarityValue * item.quantity);
+
         let lootTableRow = document.createElement("tr");
         let lootRowData = `
             <td>${item.name}</td>
@@ -143,39 +109,29 @@ function renderLoot() {
             <td>${item.value.toFixed(2)}</td>
             <td>${item.rarityValue.toFixed(2)}</td>
             <td>${(item.rarityValue * item.quantity).toFixed(2)}</td>
-            `
+            `;
 
         lootTableRow.innerHTML = lootRowData;
         
         // Build the remove button. This used to be a div, but now it's an actual button because why not.
-        let removeCell = document.createElement("td");
+        let removeButtonCell = document.createElement("td");
         let removeButton = document.createElement("button");
         removeButton.innerText = "❌";
         removeButton.className = "removeFromLootButton";
         
-        removeCell.appendChild(removeButton);
-        lootTableRow.appendChild(removeCell);
-        LOOT_TABLE.appendChild(lootTableRow);
+        removeButtonCell.appendChild(removeButton);
+        lootTableRow.appendChild(removeButtonCell);
+        LOOT_DATA.appendChild(lootTableRow);
         
         removeButton.addEventListener("click", function() { removeLoot(index) });
     }
 
     // The spacer line between the last item and the totals line.
-    LOOT_TABLE.insertAdjacentHTML("beforeend", `<tr><td colspan="9">&nbsp;</td></tr>`);
+    // LOOT_DATA.insertAdjacentHTML("beforeend", `<tr><td colspan="9">&nbsp;</td></tr>`);
 
-    // Create the new row that will be the totals line and load it up with data.
-    let lootTotalRow = document.createElement("tr");
-    lootTotalRow.innerHTML = `
-        <td><b>Totals:</b></td>
-        <td>${totalLootQuantity}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>${totalLootPartyValue.toFixed(2)}</td>
-        <td></td>
-        `;
-
-    LOOT_TABLE.appendChild(lootTotalRow);
+    // Set the loot totals in the table's totals line.
+    document.getElementById('totalLootQuantity').innerText = totalLootQuantity;
+    document.getElementById('totalLootPartyValue').innerText = totalLootPartyValue.toFixed(2);
     
     document.getElementById('no-loot-message').style.display = "none"; // Hide the "no loot to display" message.
 
@@ -282,22 +238,38 @@ function saveState() {
         lootList
     ]
     
-    console.log(saveStateObject);
+    // console.log(saveStateObject);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saveStateObject));
 }
 
 
-function loadState() {
+function restoreState() {
     let saveStateObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saveStateObject === null) return; // Bail out if the key doesn't exist to avoid errors.
-    let loadLootList = saveStateObject[1];
     
+    // A bunch of checks to ensure that the data we're working with is valid.
+    // Checks for null, non-object, length, and appropriate types and validity of that specific expected data.
+    if (saveStateObject === null || typeof(saveStateObject) !== 'object') return;
+    if (saveStateObject.length !== 2) return;
+    if (typeof(saveStateObject[0]) !== 'number' || saveStateObject[0] < 1) return; // Party size must be at least 1.
+
+    let loadLootList = saveStateObject[1];
+    if (loadLootList.length === 0 || typeof(loadLootList) !== 'object') return; // The second object must be an object and contain data.
+     
+    // We construct a new "blank" object from scratch since we're only interested in the keys.
+    // Then in the for loop after we compare the stringified version of the loot object's keys.
+    // If they don't match, we skip that iteration and go to the next.
+    let testKeys = JSON.stringify(Object.keys(new LootItem()).sort());
+
     for (loot of loadLootList) {
+        let lootObjectKeys = JSON.stringify(Object.keys(loot).sort()); // Get
+        if (lootObjectKeys !== testKeys) continue;
+
         let newLoot = new LootItem (loot["name"], loot["value"], loot["quantity"], loot["rarity"]);
         lootList.push(newLoot);
     }
 
     PARTY_NUMBER_INPUT.value = saveStateObject[0];
+    partySize = saveStateObject[0];
     updateUI();
 }
 
@@ -357,4 +329,4 @@ document.getElementById('party-setup-close-button').addEventListener('click', cl
 document.getElementById('party-setup-show-button').addEventListener('click', showPartySetup);
 document.getElementById('resetAllButton').addEventListener('click', resetAll);
 
-loadState();
+restoreState();

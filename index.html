@@ -71,12 +71,36 @@
 
         <section aria-label="Loot List panel">
             <header>
-                <div id="loot-list-close-button" aria-label="Clear All Loot Button"><!-- Close button decoration --></div>
+                <div><!-- Fake close button decoration --></div>
                 <h2>Loot List</h2>
             </header>
             <div>
                 <div id="no-loot-message">No loot to display. Add something using the Add Loot form.</div>
                 <table class="loot-list-table" id="lootTable">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Quality</th>
+                            <th>Base Value</th>
+                            <th>Quality Value</th>
+                            <th>Total Value</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lootData"></tbody>
+                    <tfoot>
+                        <tr><td colspan="9">&nbsp;</td></tr>
+                        <tr>
+                            <td><b>Totals:</b></td>
+                            <td id="totalLootQuantity"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td id="totalLootPartyValue"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </section>
