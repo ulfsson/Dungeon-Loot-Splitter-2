@@ -5,17 +5,21 @@
 
 
 body {
-    background-color: #63639c;
+    background-color: #306498;
     margin: 0px;
 }
 
 
 body>header {
-    background-color: #ffefd9;
+    background-color: #d8d8d8;
     color: black;
-    border-bottom: 1px solid black;
+    border-bottom: 2px solid black;
     text-align: center;
     padding: 1px;
+}
+
+body>header>h1 {
+    font-family: Georgia, 'Times New Roman', Times, serif
 }
 
 
@@ -38,41 +42,82 @@ main > hr {
 main>section {
     display: grid;
     grid-template-rows: 20px 1fr;
-    border: 1px solid;
-    border-color: white #999 #999 white;
-    outline: 1px solid black;
-    background-color: #ccc;
-    margin: 10px;
-    box-shadow: 3px 3px black;
 }
 
 
-main>section>header {
-    width: 100%;
-    text-align: center;
+.panel {
+    display: grid;
+    border: 1px solid;
+    border-color: white #999 #999 white;
+    outline: 1px solid black;
+    background-color: #d8d8d8;
+    box-shadow: 3px 3px black;
+}
+
+.panel-content {
+    border: 1px solid;
+    border-color: #999 white white #999;
+    outline: 1px solid black;
+    outline-offset: -2px;
+    background-color: #d8d8d8;   
+    margin: 2px;
+}
+
+.pad-content {
+    padding: 15px;
+}
+
+.titlebar {
+    border-top: 1px solid #fcfc30;
+    border-left: 1px solid #fcfc30;
+    border-right: 1px solid #986400;
+    text-align: left;
     position: relative;
     display: flex;
-    justify-content: center;
     align-items: center;
+    min-height: 20px;
+    background-color: #fcc800;
+    width: fit-content;
+}
+
+.titlebar>h2 {
+    margin-left: 20px;
+    padding-right: 20px;
 }
 
 
 /* This is for the fake close button decoration. */
-main>section>header>div:nth-child(1) {
-    width: 13px;
-    height: 13px;
-    outline: 1px solid black;
-    outline-offset: -2px;
-    background-image: linear-gradient(to bottom right, #999, white);
-    box-shadow: inset 1px 1px 0 0 #ccc,
-        inset -1px -1px 0 0 #888;
-
-    border: 2px solid;
-    border-color: #888 white white #888;
+div.close-button-outer {
+    border-top: 1px solid #989800;
+    border-left: 1px solid #989800;
     margin: 3px;
     position: absolute;
+}
+
+
+div.close-button-inner {
+    width: 12px;
+    height: 12px;
+    background-image: linear-gradient(to bottom right, #fcfc30, #fcac10);
+    outline: 1px solid #fcfc30;
+    outline-offset: -1px;
+    box-shadow: inset -2px -2px 0 0 #989800;
     top: 0;
     left: 0;
+}
+
+
+div.close-button-outer:active {
+    border: none;
+}
+
+
+div.close-button-inner:active {
+    border: 2px solid;
+    border-color: #989800 #fcfc30 #fcfc30 #989800;
+    outline: 0px;
+    box-shadow: none;
+    background-image: linear-gradient(to bottom right, #fcac10, #fcfc30);
 }
 
 
@@ -112,9 +157,11 @@ main>section>header>h2 {
     place-content: center;
 }
 
+
 #partyNumber {
     width: 80px;
 }
+
 
 main>section>header>div:active {
     background-image: linear-gradient(to bottom right, #444, #bbb);
@@ -122,20 +169,7 @@ main>section>header>div:active {
 }
 
 
-/* For the main panel. */
-main>section>div {
-    border: 1px solid;
-    border-color: #999 white white #999;
-    outline: 1px solid black;
-    outline-offset: -2px;
-    background-color: #ccc;
-    padding: 15px;
-    margin: 0 3px 3px 3px;
-}
-
-
 .loot-list-table {
-    border: 1px dotted black;
     border-collapse: collapse;
     display: none;
     width: 100%;
@@ -143,12 +177,13 @@ main>section>div {
 
 
 .loot-list-table thead {
-    background-color: #add8e671;
+    background-color: #d8d8d8;
 }
 
 
 .loot-list-table th {
-    border: 1px dotted black;
+    border: 2px outset;
+    border-color: #fcfcfc #909090 #909090 #fcfcfc;
     padding: 5px;
 }
 
