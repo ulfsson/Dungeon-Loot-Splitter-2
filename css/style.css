@@ -61,6 +61,7 @@ main>section {
     outline-offset: -2px;
     background-color: #d8d8d8;   
     margin: 2px;
+    padding: 1px;
 }
 
 .pad-content {
@@ -169,8 +170,11 @@ main>section>header>div:active {
 }
 
 
+
+
 .loot-list-table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     display: none;
     width: 100%;
 }
@@ -182,7 +186,7 @@ main>section>header>div:active {
 
 
 .loot-list-table th {
-    border: 2px outset;
+    border: 1px solid;
     border-color: #fcfcfc #909090 #909090 #fcfcfc;
     padding: 5px;
 }
